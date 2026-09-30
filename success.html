@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed | AuraStore</title>
+  <meta name="description" content="Thank you for your order. Your AuraStore order has been confirmed.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="navbar-header">
+    <div class="container">
+      <nav class="navbar" aria-label="Main Navigation">
+        <a href="index.html" class="logo" id="brandLogo">
+          <div class="logo-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+          </div>
+          <span>Aura<span class="logo-accent">Store</span></span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="container" style="padding-top: 4rem; padding-bottom: 5rem; max-width: 720px;">
+      
+      <div class="success-card">
+        
+        <div class="success-header text-center">
+          <div class="success-icon-badge">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <span class="order-status-badge">Order Confirmed</span>
+          <h1 class="success-title">Thank You for Your Order</h1>
+          <p class="success-subtitle">We have received your order and sent a confirmation receipt to your email.</p>
+        </div>
+
+        <div class="order-meta-box">
+          <div class="meta-item">
+            <span class="meta-label">Order Number</span>
+            <span class="meta-val" id="dispOrderId">ORD-2026-89421</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Estimated Delivery</span>
+            <span class="meta-val">Oct 3 – Oct 5, 2026</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Payment Method</span>
+            <span class="meta-val" id="dispPayment">Credit Card (Encrypted)</span>
+          </div>
+        </div>
+
+        <div class="success-details-section">
+          <h3>Order Details</h3>
+          <div id="dispOrderItems" class="success-items-list"></div>
+          
+          <div class="summary-divider"></div>
+
+          <div class="summary-line"><span>Subtotal</span><span id="dispSubtotal">$0.00</span></div>
+          <div class="summary-line"><span>Shipping</span><span id="dispShipping">FREE</span></div>
+          <div class="summary-line"><span>Tax</span><span id="dispTax">$0.00</span></div>
+          <div class="summary-divider"></div>
+          <div class="summary-line summary-total"><span>Total Paid</span><span id="dispTotal">$0.00</span></div>
+        </div>
+
+        <div class="success-shipping-info">
+          <h3>Shipping Address</h3>
+          <p id="dispShipAddress" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.5;"></p>
+        </div>
+
+        <div class="text-center" style="margin-top: 2.5rem;">
+          <a href="index.html#shop" class="btn btn-primary btn-lg" style="min-width: 240px;">
+            <span>Continue Shopping</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 AuraStore Technologies Inc. All rights reserved.</p>
+        <p>Built with Vanilla HTML5, CSS3, and JavaScript.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script src="cart.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderIdParam = urlParams.get('orderId');
+
+      let orderData = null;
+      try {
+        const raw = sessionStorage.getItem('aurastore_last_order');
+        if (raw) orderData = JSON.parse(raw);
+      } catch (e) {}
+
+      if (!orderData) {
+        orderData = {
+          orderId: orderIdParam || 'ORD-2026-89421',
+          customer: { name: 'Alex Vance', email: 'alex.vance@company.io' },
+          shippingAddress: { street: '1428 Elmwood Ave, Suite 400', city: 'Chicago', zip: '60611', country: 'United States' },
+          paymentMethod: 'card',
+          items: [
+            { name: 'Aura Wireless Headphones', quantity: 1, price: 299.99, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80' }
+          ],
+          totals: { subtotal: 299.99, shipping: 0, tax: 24.00, total: 323.99 }
+        };
+      }
+
+      document.getElementById('dispOrderId').textContent = orderData.orderId;
+      document.getElementById('dispPayment').textContent = orderData.paymentMethod.toUpperCase() + ' (Secured)';
+      
+      const addr = orderData.shippingAddress;
+      document.getElementById('dispShipAddress').innerHTML = `
+        <strong>${orderData.customer.name}</strong><br>
+        ${addr.street}<br>
+        ${addr.city}, ${addr.zip}, ${addr.country}<br>
+        Email: ${orderData.customer.email}
+      `;
+
+      const itemsList = document.getElementById('dispOrderItems');
+      itemsList.innerHTML = (orderData.items || []).map(item => `
+        <div class="checkout-summary-item" style="padding: 0.75rem 0;">
+          <div class="summary-item-img">
+            <img src="${item.image}" alt="${item.name}" />
+            <span class="summary-item-qty">${item.quantity}</span>
+          </div>
+          <div class="summary-item-details">
+            <h4 class="summary-item-title">${item.name}</h4>
+          </div>
+          <div class="summary-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+        </div>
+      `).join('');
+
+      const t = orderData.totals || {};
+      document.getElementById('dispSubtotal').textContent = `$${(t.subtotal || 0).toFixed(2)}`;
+      document.getElementById('dispShipping').textContent = t.shipping === 0 ? 'FREE' : `$${(t.shipping || 0).toFixed(2)}`;
+      document.getElementById('dispTax').textContent = `$${(t.tax || 0).toFixed(2)}`;
+      document.getElementById('dispTotal').textContent = `$${(t.total || 0).toFixed(2)}`;
+    });
+  </script>
+</body>
+</html>
